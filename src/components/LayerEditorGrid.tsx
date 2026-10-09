@@ -19,10 +19,10 @@ export function LayerEditorGrid({ title, size, cells, onToggle }: LayerEditorGri
         <button
           key={key}
           className={[
-            'aspect-square rounded-[1rem] border transition duration-150',
+            'aspect-square border transition duration-150',
             isActive
-              ? 'border-cyan-100/70 bg-cyan-300/80 shadow-lg shadow-cyan-950/40'
-              : 'border-emerald-200/20 bg-emerald-400/20 hover:border-emerald-100/40 hover:bg-emerald-300/30',
+              ? 'border-sky-700 bg-sky-600 shadow-sm'
+              : 'border-slate-300 bg-white hover:border-emerald-500 hover:bg-emerald-50',
           ].join(' ')}
           onClick={() => onToggle(x, y)}
           type="button"
@@ -35,12 +35,12 @@ export function LayerEditorGrid({ title, size, cells, onToggle }: LayerEditorGri
     <section className="panel p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <h3 className="font-['Trebuchet_MS','Avenir_Next',sans-serif] text-lg font-semibold text-white">
+          <h3 className="font-['Trebuchet_MS','Avenir_Next',sans-serif] text-lg font-semibold text-slate-900">
             {title}
           </h3>
-          <p className="text-sm text-slate-300/70">Click cells to define this layer&apos;s footprint.</p>
+          <p className="text-sm text-slate-600">Click cells to define this layer&apos;s footprint.</p>
         </div>
-        <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-slate-100/80">
+        <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-600">
           {cells.size} active
         </div>
       </div>

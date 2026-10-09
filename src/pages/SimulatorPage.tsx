@@ -60,9 +60,9 @@ export function SimulatorPage() {
   const [coveredTop, setCoveredTop] = useState<Set<string>>(() => new Set())
   const [coveredBottom, setCoveredBottom] = useState<Set<string>>(() => new Set())
   const [hoverCell, setHoverCell] = useState<GridPoint | null>(null)
-  const [isFlipped, setIsFlipped] = useState(false)
+  const [isSwapped, setIsSwapped] = useState(false)
 
-  const activeTile = isFlipped ? flipTileAcrossLayers(tile) : tile
+  const activeTile = isSwapped ? flipTileAcrossLayers(tile) : tile
   const bounds = tileBounds(activeTile)
 
   const projected = hoverCell ? getProjectedTile(activeTile, hoverCell) : null
@@ -128,9 +128,9 @@ export function SimulatorPage() {
         return
       }
 
-      if (event.key.toLowerCase() === 'f') {
+      if (event.key.toLowerCase() === 's') {
         event.preventDefault()
-        setIsFlipped((current) => !current)
+        setIsSwapped((current) => !current)
       }
     }
 
@@ -145,9 +145,9 @@ export function SimulatorPage() {
       <section className="panel p-5 sm:p-6">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-emerald-200/75">Page 2</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-emerald-700">Page 2</p>
             <h2 className="section-title mt-3">The Simulator</h2>
-            <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-200/75">
+            <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-600">
               All controls now live above the boards so the dual-plane workspace can occupy as much
               of the screen as possible. Hover either grid to project the same anchor across both
               layers, and place only when both planes validate together.
@@ -158,9 +158,9 @@ export function SimulatorPage() {
               'self-start rounded-full border px-4 py-2 text-sm font-semibold xl:self-auto',
               hoverCell
                 ? placementIsValid
-                  ? 'border-sky-200/40 bg-sky-300/10 text-sky-50'
-                  : 'border-slate-300/20 bg-slate-700/40 text-slate-100'
-                : 'border-white/10 bg-white/5 text-white/70',
+                  ? 'border-sky-400 bg-sky-50 text-sky-800'
+                  : 'border-rose-300 bg-rose-50 text-rose-800'
+                : 'border-slate-200 bg-slate-50 text-slate-600',
             ].join(' ')}
           >
             {hoverCell
@@ -177,19 +177,20 @@ export function SimulatorPage() {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-cyan-200/75">Board Controls</p>
-                <p className="mt-2 text-sm leading-6 text-slate-200/75">
-                  Vertical flip swaps the tile&apos;s top and bottom layers. Changing size resets
-                  and synchronizes both boards together.
+                <p className="text-xs uppercase tracking-[0.28em] text-sky-700">Board Controls</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Swap keeps every cell at the same relative coordinate, but exchanges the tile's
+                  A and B patterns between the Top and Bottom planes. Changing size resets and
+                  synchronizes both boards together.
                 </p>
               </div>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-100/80">
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
                 Both boards: {boardSize} x {boardSize}
               </span>
             </div>
 
             <label className="space-y-3">
-              <span className="text-sm font-semibold text-white">Board Size N</span>
+              <span className="text-sm font-semibold text-slate-900">Board Size N</span>
               <input
                 className="w-full accent-cyan-300"
                 max={MAX_BOARD_SIZE}
@@ -200,14 +201,14 @@ export function SimulatorPage() {
               />
               <div className="grid gap-3 sm:grid-cols-[9rem_minmax(0,1fr)] sm:items-center">
                 <input
-                  className="w-full rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-white outline-none ring-0 transition focus:border-cyan-200/50"
+                  className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none ring-0 transition focus:border-sky-500"
                   max={MAX_BOARD_SIZE}
                   min={MIN_BOARD_SIZE}
                   onChange={(event) => handleBoardSizeChange(event.currentTarget.valueAsNumber)}
                   type="number"
                   value={boardSize}
                 />
-                <p className="text-sm leading-6 text-slate-200/70">
+                <p className="text-sm leading-6 text-slate-600">
                   Range: {MIN_BOARD_SIZE}-{MAX_BOARD_SIZE}. Use the slider or type a value.
                 </p>
               </div>
@@ -216,10 +217,10 @@ export function SimulatorPage() {
             <div className="grid gap-3 sm:grid-cols-3">
               <button
                 className="control-button"
-                onClick={() => setIsFlipped((current) => !current)}
+                onClick={() => setIsSwapped((current) => !current)}
                 type="button"
               >
-                Vertical Flip ({isFlipped ? 'Flipped' : 'Original'}) · F
+                Swap A ↔ B ({isSwapped ? 'B → Top' : 'A → Top'}) · S
               </button>
               <button className="control-button" onClick={() => resetBoard()} type="button">
                 Reset Board
@@ -233,28 +234,28 @@ export function SimulatorPage() {
 
         <section className="panel p-5 sm:p-6">
           <div className="flex flex-col gap-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-cyan-200/75">Current Tile</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-sky-700">Current Tile</p>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="stat-card">
-                <p className="text-sm text-slate-300/70">Top cells</p>
-                <p className="mt-1 text-2xl font-semibold text-white">{activeTile.layerTop.length}</p>
+                <p className="text-sm text-slate-600">Top cells ({isSwapped ? 'B' : 'A'})</p>
+                <p className="mt-1 text-2xl font-semibold text-slate-950">{activeTile.layerTop.length}</p>
               </div>
               <div className="stat-card">
-                <p className="text-sm text-slate-300/70">Bottom cells</p>
-                <p className="mt-1 text-2xl font-semibold text-white">
+                <p className="text-sm text-slate-600">Bottom cells ({isSwapped ? 'A' : 'B'})</p>
+                <p className="mt-1 text-2xl font-semibold text-slate-950">
                   {activeTile.layerBottom.length}
                 </p>
               </div>
               <div className="stat-card">
-                <p className="text-sm text-slate-300/70">Footprint</p>
-                <p className="mt-1 text-2xl font-semibold text-white">
+                <p className="text-sm text-slate-600">Footprint</p>
+                <p className="mt-1 text-2xl font-semibold text-slate-950">
                   {bounds.width} × {bounds.height}
                 </p>
               </div>
               <div className="stat-card">
-                <p className="text-sm text-slate-300/70">Covered cells</p>
-                <p className="mt-1 text-2xl font-semibold text-white">{totalCovered}</p>
+                <p className="text-sm text-slate-600">Covered cells</p>
+                <p className="mt-1 text-2xl font-semibold text-slate-950">{totalCovered}</p>
               </div>
             </div>
 
@@ -265,21 +266,21 @@ export function SimulatorPage() {
               </p>
             ) : null}
 
-            <div className="grid gap-3 sm:grid-cols-2 text-sm text-slate-100/80">
+            <div className="grid gap-3 sm:grid-cols-2 text-sm text-slate-700">
               <div className="flex items-center gap-3">
-                <span className="h-4 w-4 rounded-full border border-emerald-100/20 bg-emerald-400/25" />
+                <span className="h-4 w-4 border border-slate-300 bg-white" />
                 Empty / uncovered
               </div>
               <div className="flex items-center gap-3">
-                <span className="h-4 w-4 rounded-full border border-rose-100/30 bg-rose-400/20" />
+                <span className="h-4 w-4 border border-rose-400 bg-rose-300" />
                 Already covered
               </div>
               <div className="flex items-center gap-3">
-                <span className="h-4 w-4 rounded-full border border-sky-100/45 bg-sky-300/20" />
+                <span className="h-4 w-4 border border-sky-500 bg-sky-200" />
                 Valid ghost
               </div>
               <div className="flex items-center gap-3">
-                <span className="h-4 w-4 rounded-full border border-slate-300/20 bg-slate-800/75" />
+                <span className="h-4 w-4 border border-slate-400 bg-slate-200" />
                 Invalid ghost
               </div>
             </div>
@@ -290,10 +291,10 @@ export function SimulatorPage() {
       <section className="panel p-4 sm:p-5 lg:p-6">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="font-['Trebuchet_MS','Avenir_Next',sans-serif] text-xl font-semibold text-white">
+            <h3 className="font-['Trebuchet_MS','Avenir_Next',sans-serif] text-xl font-semibold text-slate-950">
               Dual-Plane Board
             </h3>
-            <p className="mt-2 text-sm leading-6 text-slate-200/75">
+            <p className="mt-2 text-sm leading-6 text-slate-600">
               This is the main workspace, so the layout gives it the widest uninterrupted area on
               the page.
             </p>
